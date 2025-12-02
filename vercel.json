@@ -1,0 +1,6 @@
+{
+  "crons": [{
+    "path": "/api/cron/refresh-scores",
+    "schedule": "0 */6 * * *"
+  }]
+}
