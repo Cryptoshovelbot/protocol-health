@@ -35,7 +35,7 @@ Sentry.init({
   beforeSend(event, hint) {
     // Filter out sensitive data
     if (event.request?.cookies) {
-      event.request.cookies = '[Filtered]';
+      event.request.cookies = {} as Record<string, string>;;
     }
     
     if (event.request?.data) {
@@ -58,7 +58,7 @@ Sentry.init({
           }
         });
         
-        event.request.data = filtered;
+        event.request.data = undefined;
       }
     }
     
