@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           website: protocol.url,
           chain: protocol.chains?.join(', ') || protocol.chain || 'Unknown',
           tvl: Math.floor(protocol.tvl),
-          volume_24h: Math.floor(protocol.totalVolume24h || 0),
+          volume_24h: 0, // Volume data not available from DeFiLlama,
           age_days: protocol.listedAt ? 
             Math.floor((Date.now() / 1000 - protocol.listedAt) / 86400) : 0,
           
