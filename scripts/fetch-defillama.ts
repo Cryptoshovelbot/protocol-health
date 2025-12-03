@@ -1,7 +1,15 @@
+import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing environment variables!');
+  console.error('Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface DefiLlamaProtocol {
@@ -19,22 +27,19 @@ interface DefiLlamaProtocol {
   chainTvls?: Record<string, number>;
 }
 
-// Calcule un score basique basé sur les données disponibles
 function calculateScore(protocol: DefiLlamaProtocol): {
   score: number;
   grade: string;
   risk: string;
 } {
-  let score = 50; // Base score
+  let score = 50;
 
-  // TVL Score (max 25 points)
   if (protocol.tvl > 5000000000) score += 25;
   else if (protocol.tvl > 1000000000) score += 20;
   else if (protocol.tvl > 500000000) score += 15;
   else if (protocol.tvl > 100000000) score += 10;
   else score += 5;
 
-  // Age Score (max 15 points)
   if (protocol.listedAt) {
     const ageInDays = (Date.now() / 1000 - protocol.listedAt) / 86400;
     if (ageInDays > 1000) score += 15;
@@ -42,12 +47,10 @@ function calculateScore(protocol: DefiLlamaProtocol): {
     else if (ageInDays > 200) score += 5;
   }
 
-  // Multi-chain bonus (10 points)
   if (protocol.chains && protocol.chains.length > 1) {
     score += 10;
   }
 
-  // Determine grade and risk
   let grade = 'C';
   let risk = 'High';
 
@@ -78,7 +81,6 @@ async function fetchAndStoreProtocols() {
   console.log('🔍 Fetching protocols from DeFiLlama...');
 
   try {
-    // Fetch protocols from DeFiLlama
     const response = await fetch('https://api.llama.fi/protocols');
     
     if (!response.ok) {
@@ -87,11 +89,10 @@ async function fetchAndStoreProtocols() {
 
     const protocols: DefiLlamaProtocol[] = await response.json();
     
-    // Filter and sort by TVL
     const topProtocols = protocols
-      .filter(p => p.tvl > 50000000) // Only protocols with >$50M TVL
+      .filter(p => p.tvl > 50000000)
       .sort((a, b) => b.tvl - a.tvl)
-      .slice(0, 50); // Top 50
+      .slice(0, 50);
 
     console.log(`📊 Found ${topProtocols.length} protocols to process`);
 
@@ -126,7 +127,6 @@ async function fetchAndStoreProtocols() {
           last_updated: new Date().toISOString(),
         };
 
-        // Check if protocol exists
         const { data: existing } = await supabase
           .from('protocols')
           .select('id')
@@ -134,7 +134,6 @@ async function fetchAndStoreProtocols() {
           .single();
 
         if (existing) {
-          // Update existing
           const { error } = await supabase
             .from('protocols')
             .update(protocolData)
@@ -144,7 +143,6 @@ async function fetchAndStoreProtocols() {
           updated++;
           console.log(`✅ Updated: ${protocol.name}`);
         } else {
-          // Insert new
           const { error } = await supabase
             .from('protocols')
             .insert(protocolData);
