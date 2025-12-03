@@ -40,11 +40,45 @@ export default async function ProtocolDetailPage({
   }
 
   const breakdown = {
-    security: { score: Math.round((protocol.score_security || 25) / 30 * 30), max: 30 },
-    tvlStability: { score: Math.round((protocol.score_tvl_stability || 15) / 20 * 20), max: 20 },
-    decentralization: { score: Math.round((protocol.score_decentralization || 14) / 20 * 20), max: 20 },
-    financialHealth: { score: Math.round((protocol.score_financial || 15) / 20 * 20), max: 20 },
-    community: { score: Math.round((protocol.score_community || 8) / 10 * 10), max: 10 },
+    security: { 
+      score: Math.round((protocol.score_security || 25) / 30 * 30), 
+      max: 30,
+      details: {
+        hasAudits: true,
+        auditCount: 0,
+        age: protocol.age_days || 0,
+        exploitHistory: 0
+      }
+    },
+    tvlStability: { 
+      score: Math.round((protocol.score_tvl_stability || 15) / 20 * 20), 
+      max: 20,
+      volatility: 15
+    },
+    decentralization: { 
+      score: Math.round((protocol.score_decentralization || 14) / 20 * 20), 
+      max: 20,
+      details: {
+        tokenDistribution: 7,
+        governanceActivity: 7
+      }
+    },
+    financialHealth: { 
+      score: Math.round((protocol.score_financial || 15) / 20 * 20), 
+      max: 20,
+      details: {
+        revenueTrend: 8,
+        treasurySize: 7
+      }
+    },
+    community: { 
+      score: Math.round((protocol.score_community || 8) / 10 * 10), 
+      max: 10,
+      details: {
+        githubActivity: 4,
+        socialEngagement: 4
+      }
+    },
   };
 
   const strengths = [
