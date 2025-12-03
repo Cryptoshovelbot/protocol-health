@@ -1,3 +1,4 @@
+
 import { NextRequest } from 'next/server';
 import { createAPIResponse, requireAuth, getUserProfile, sanitizeInput } from '@/lib/auth';
 import { createSupabaseServerClient } from '@/lib/supabase';
@@ -127,7 +128,7 @@ export async function POST(request: NextRequest) {
     // Log activity for analytics
     console.log(`User ${session.user.id} added protocol ${protocolId} to watchlist`);
 
-    return createAPIResponse(data, null, 201);
+    return createAPIResponse(data, '', 201);;
   } catch (error: any) {
     return createAPIResponse(null, error.message, 500);
   }
