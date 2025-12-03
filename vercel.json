@@ -1,6 +1,7 @@
 {
-  "crons": [{
-    "path": "/api/cron/refresh-scores",
-    "schedule": "0 12 * * *"
-  }]
+  "functions": {
+    "app/api/cron/refresh-scores/route.ts": {
+      "maxDuration": 300
+    }
+  }
 }
