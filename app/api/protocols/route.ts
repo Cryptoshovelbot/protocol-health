@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       .from('protocols')
       .select('*')
       .order('score_overall', { ascending: false })
-      .limit(20); // Free tier limit
+      .limit(100); // Increased limit
 
     if (error) {
       throw error;
