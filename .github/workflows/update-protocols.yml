@@ -1,0 +1,38 @@
+name: Update Protocol Data
+
+on:
+  schedule:
+    # Runs every day at 12:00 UTC (noon)
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update protocol data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/fetch-defillama.ts
+
+      - name: Report success
+        if: success()
+        run: echo "✅ Protocol data updated successfully!"
+
+      - name: Report failure
+        if: failure()
+        run: echo "❌ Failed to update protocol data"
