@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Search, ArrowRight, Loader2, Lock } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 
 interface Protocol {
@@ -54,8 +54,8 @@ export default function ProtocolsPage() {
     return matchesSearch && matchesGrade;
   });
 
-  const visibleProtocols = filteredProtocols.slice(0, 20);
-  const hasMoreProtocols = filteredProtocols.length > 20;
+  const publicProtocols = filteredProtocols.slice(0, 15);
+  const lockedProtocols = filteredProtocols.slice(15);
 
   const gradeFilters = ['A', 'B', 'C', 'D'];
 
@@ -135,14 +135,14 @@ export default function ProtocolsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {visibleProtocols.length === 0 ? (
+                    {publicProtocols.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="p-8 text-center text-muted-foreground">
                           No protocols found matching your criteria
                         </td>
                       </tr>
                     ) : (
-                      visibleProtocols.map((protocol, index) => (
+                      publicProtocols.map((protocol, index) => (
                         <tr key={protocol.id} className="border-b hover:bg-muted/50 transition-colors">
                           <td className="p-4 font-medium">{index + 1}</td>
                           <td className="p-4 font-semibold">{protocol.name}</td>
@@ -183,19 +183,19 @@ export default function ProtocolsPage() {
                         </tr>
                       ))
                     )}
-                    {hasMoreProtocols && (
+                    {lockedProtocols.length > 0 && (
                       <tr className="bg-muted/30">
                         <td colSpan={8} className="p-8 text-center">
                           <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                           <h3 className="text-xl font-semibold mb-2">
-                            🔒 Unlock {filteredProtocols.length - 20} More Protocols
+                            🔒 Sign Up to See {lockedProtocols.length} More Protocols
                           </h3>
                           <p className="text-muted-foreground mb-4">
-                            Get access to all protocols with detailed analysis and real-time alerts
+                            Create a free account to access all protocols with detailed analysis
                           </p>
-                          <Link href="/pricing">
-                            <Button>
-                              Upgrade to Pro - €29/month
+                          <Link href="/signup">
+                            <Button size="lg">
+                              Sign Up Free
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                           </Link>
