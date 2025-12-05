@@ -4,7 +4,7 @@ import { Footer } from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, TrendingUp, Bell, BarChart3, CheckCircle, ArrowRight, Zap, Users } from 'lucide-react';
+import { Shield, TrendingUp, Bell, BarChart3, ArrowRight, Zap, Users } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -16,9 +16,6 @@ export default function Home() {
         <section className="relative py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <Badge className="mb-4" variant="outline">
-                Free DeFi Risk Intelligence
-              </Badge>
               <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Know Which DeFi Protocols<br />You Can Trust
               </h1>
@@ -26,15 +23,15 @@ export default function Home() {
                 Real-time risk scoring for 30+ DeFi protocols. Make informed decisions with comprehensive security analysis updated daily.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/signup">
+                <Link href="/protocols">
                   <Button size="lg" className="text-lg px-8">
-                    Get Started Free
+                    View Risk Scores
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="/protocols">
                   <Button size="lg" variant="outline" className="text-lg px-8">
-                    View All Scores
+                    See All Protocols
                   </Button>
                 </Link>
               </div>
@@ -214,11 +211,11 @@ export default function Home() {
                   Start Making Safer DeFi Decisions
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Join DeFi investors who trust Protocol Health for risk analysis
+                  View risk scores for 30+ DeFi protocols
                 </p>
-                <Link href="/signup">
+                <Link href="/protocols">
                   <Button size="lg" className="text-lg px-8">
-                    Get Started Free
+                    View Risk Scores
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>

@@ -32,7 +32,7 @@ export function Header() {
             <Button variant="ghost">Login</Button>
           </Link>
           <Link href="/signup">
-            <Button>Get Started</Button>
+            <Button>Sign Up</Button>
           </Link>
         </div>
 
@@ -57,7 +57,7 @@ export function Header() {
               <Button variant="ghost" className="w-full">Login</Button>
             </Link>
             <Link href="/signup">
-              <Button className="w-full">Get Started</Button>
+              <Button className="w-full">Sign Up</Button>
             </Link>
           </nav>
         </div>
