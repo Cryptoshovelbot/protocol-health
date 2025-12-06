@@ -8,20 +8,26 @@ import { Badge } from '@/components/ui/badge';
 import { ScoreBreakdownChart } from '@/components/score-breakdown-chart';
 import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
+import { createClient } from '@supabase/supabase-js';
 
 async function getProtocolData(slug: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/protocols/${slug}`, {
-      cache: 'no-store',
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    const { data: protocol, error } = await supabase
+      .from('protocols')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-    if (!response.ok) {
+    if (error || !protocol) {
       return null;
     }
 
-    const result = await response.json();
-    return result.data;
+    return protocol;
   } catch (error) {
     console.error('Error fetching protocol:', error);
     return null;
