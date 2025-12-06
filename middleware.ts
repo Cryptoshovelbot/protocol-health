@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { checkRateLimit } from '@/lib/redis';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -9,13 +8,6 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   });
-
-  const rateLimitKey = getRateLimitKey(request);
-  const { success } = await checkRateLimit(rateLimitKey);
-
-  if (!success) {
-    return new NextResponse('Too many requests', { status: 429 });
-  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -66,11 +58,6 @@ export async function middleware(request: NextRequest) {
   await supabase.auth.getUser();
 
   return response;
-}
-
-function getRateLimitKey(request: NextRequest): string {
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
-  return `${ip}:${request.nextUrl.pathname}`;
 }
 
 export const config = {
