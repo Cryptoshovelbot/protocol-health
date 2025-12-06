@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScoreBreakdownChart } from '@/components/score-breakdown-chart';
-import { ArrowLeft, Bell, Download, CheckCircle, AlertTriangle, Lock, Shield } from 'lucide-react';
+import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 
 async function getProtocolData(slug: string) {
@@ -28,11 +28,10 @@ async function getProtocolData(slug: string) {
   }
 }
 
-export default async function ProtocolDetailPage({ 
-  params 
-}: { 
-  params: { slug: string } 
+export default async function ProtocolDetailPage(props: { 
+  params: Promise<{ slug: string }> 
 }) {
+  const params = await props.params;
   const protocol = await getProtocolData(params.slug);
   
   if (!protocol) {
@@ -132,16 +131,6 @@ export default async function ProtocolDetailPage({
                   </Badge>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline">
-                  <Bell className="mr-2 h-4 w-4" />
-                  Track Protocol
-                </Button>
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export Report
-                </Button>
-              </div>
             </div>
           </div>
 
@@ -198,27 +187,6 @@ export default async function ProtocolDetailPage({
                   </CardContent>
                 </Card>
               </div>
-
-              <Card className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                  <div className="text-center">
-                    <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Historical Trend</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Upgrade to Pro to view 90-day score history
-                    </p>
-                    <Link href="/pricing">
-                      <Button>Upgrade to Pro</Button>
-                    </Link>
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle>Historical Trend (90 days)</CardTitle>
-                </CardHeader>
-                <CardContent className="h-64">
-                  <div className="h-full bg-muted rounded" />
-                </CardContent>
-              </Card>
             </div>
 
             <div className="space-y-6">
@@ -278,19 +246,6 @@ export default async function ProtocolDetailPage({
                       </a>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-                <CardContent className="pt-6 text-center">
-                  <Shield className="h-12 w-12 text-blue-500 mx-auto mb-3" />
-                  <h3 className="font-semibold mb-2">Stay Protected</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Get real-time alerts when this protocol's score changes
-                  </p>
-                  <Link href="/signup">
-                    <Button className="w-full">Start Free Trial</Button>
-                  </Link>
                 </CardContent>
               </Card>
             </div>
