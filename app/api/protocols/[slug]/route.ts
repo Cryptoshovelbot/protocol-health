@@ -4,12 +4,11 @@ import { getCached, setCached } from '@/lib/redis';
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await context.params;
+  
   try {
-    const { slug } = params;
-    
-    // Check cache first
     const cacheKey = `protocol:${slug}`;
     const cached = await getCached(cacheKey);
     
@@ -21,7 +20,6 @@ export async function GET(
       });
     }
 
-    // If not cached, fetch from database
     const supabase = createSupabaseServerClient();
     
     const { data: protocol, error } = await supabase
@@ -30,17 +28,13 @@ export async function GET(
       .eq('slug', slug)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { success: false, error: 'Protocol not found' },
-          { status: 404 }
-        );
-      }
-      throw error;
+    if (error || !protocol) {
+      return NextResponse.json(
+        { success: false, error: 'Protocol not found' },
+        { status: 404 }
+      );
     }
 
-    // Cache for 1 hour
     await setCached(cacheKey, protocol, 3600);
 
     return NextResponse.json({ 
