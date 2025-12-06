@@ -3,12 +3,24 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { ArrowRight, Shield, Bell, Star } from 'lucide-react';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 
 export default async function DashboardPage() {
-  const supabase = createSupabaseServerClient();
+  const cookieStore = await cookies();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
   
   const { data: { user }, error } = await supabase.auth.getUser();
   
@@ -30,7 +42,6 @@ export default async function DashboardPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {/* Welcome Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -44,7 +55,6 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Protocol Health Card */}
             <Card>
               <CardHeader>
                 <CardTitle>Protocol Health</CardTitle>
@@ -57,7 +67,6 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Next Steps Card */}
             <Card>
               <CardHeader>
                 <CardTitle>Next Steps</CardTitle>
@@ -84,7 +93,6 @@ export default async function DashboardPage() {
             </Card>
           </div>
 
-          {/* Quick Actions */}
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="border-2 border-primary/20 hover:border-primary/40 transition-colors">
               <CardHeader>
@@ -135,7 +143,6 @@ export default async function DashboardPage() {
             </Card>
           </div>
 
-          {/* Coming Soon Features */}
           <Card className="mt-6 bg-gradient-to-br from-primary/5 to-purple-500/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
