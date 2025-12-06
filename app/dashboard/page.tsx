@@ -3,14 +3,15 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@supabase/supabase-js';
 import { ArrowRight, Shield, Bell, Star } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const supabase = createClient(
+  
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
