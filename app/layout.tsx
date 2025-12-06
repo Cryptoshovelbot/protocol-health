@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Analytics } from '@vercel/analytics/react';
+import { PostHogProvider } from '@/providers/posthog';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Protocol Health - DeFi Risk Scoring Platform',
-  description: 'Know Which DeFi Protocols You Can Trust - Real-time risk scoring for 50+ protocols',
-  keywords: 'DeFi, risk scoring, protocol analysis, TVL, security audit, decentralized finance',
+  title: 'Protocol Health - DeFi Risk Intelligence',
+  description: 'S&P-style ratings for DeFi protocols. Make informed decisions with comprehensive security analysis.',
 };
 
 export default function RootLayout({
@@ -19,8 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
-        <Analytics />
+        <PostHogProvider>
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
