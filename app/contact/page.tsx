@@ -1,7 +1,6 @@
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Mail, MessageSquare } from 'lucide-react';
-import { FaXTwitter } from 'react-icons/fa6';
+import { Mail, MessageSquare, Twitter } from 'lucide-react';
 
 export default function ContactPage() {
   return (
@@ -28,7 +27,7 @@ export default function ContactPage() {
             </div>
 
             <div className="p-6 border rounded-lg text-center hover:border-primary transition-colors">
-              <FaXTwitter className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <Twitter className="h-12 w-12 mx-auto mb-4 text-primary" />
               <h3 className="font-semibold mb-2">Twitter</h3>
               <a 
                 href="https://x.com/protocolhealth_" 
