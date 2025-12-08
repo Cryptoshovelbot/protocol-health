@@ -1,30 +1,32 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-export async function GET(request: Request) {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export async function GET() {
   try {
-    const supabase = createSupabaseServerClient();
-    
     const { data: protocols, error } = await supabase
       .from('protocols')
       .select('*')
-      .order('score_overall', { ascending: false })
-      .limit(100);
+      .order('overall_score', { ascending: false });
 
     if (error) {
-      throw error;
+      console.error('Supabase error:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      data: protocols,
-      cached: false
-    });
+    // S'assurer que protocols est un tableau
+    if (!Array.isArray(protocols)) {
+      console.error('Protocols is not an array:', protocols);
+      return NextResponse.json([], { status: 200 });
+    }
+
+    return NextResponse.json(protocols);
   } catch (error) {
-    console.error('Error fetching protocols:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch protocols' },
-      { status: 500 }
-    );
+    console.error('API error:', error);
+    return NextResponse.json([], { status: 500 });
   }
 }
