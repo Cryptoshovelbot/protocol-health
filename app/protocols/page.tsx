@@ -1,6 +1,6 @@
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { ProtocolList } from '@/components/protocol-list';
+import { ProtocolListServer } from '@/components/protocol-list-server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -20,13 +20,12 @@ export default async function ProtocolsPage() {
   );
   
   const { data: { user } } = await supabase.auth.getUser();
-  const isAuthenticated = !!user;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <ProtocolList isAuthenticated={isAuthenticated} />
+        <ProtocolListServer userEmail={user?.email} />
       </main>
       <Footer />
     </div>
