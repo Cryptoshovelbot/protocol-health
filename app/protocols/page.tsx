@@ -34,7 +34,7 @@ export default async function ProtocolsPage() {
   const { data: protocols, error } = await supabaseData
     .from('protocols')
     .select('*')
-    .order('overall_score', { ascending: false });
+    .order('score_overall', { ascending: false, nullsFirst: false });
 
   if (error) {
     console.error('Supabase error:', error);
