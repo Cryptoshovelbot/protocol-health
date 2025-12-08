@@ -58,6 +58,28 @@ export function ProtocolListStatic({ protocols, isAuthenticated }: Props) {
     return years > 0 ? `${years}yr` : `${days}d`;
   };
 
+  // Fonction pour déterminer la couleur du score selon la note
+  const getScoreColor = (grade: string) => {
+    if (!grade) return 'bg-gray-100 text-gray-700 border-gray-200';
+    
+    const letter = grade.charAt(0).toUpperCase();
+    
+    switch(letter) {
+      case 'A':
+        return 'bg-green-100 text-green-700 border-green-200';
+      case 'B':
+        return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'C':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'D':
+        return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'F':
+        return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
   return (
     <div className="py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -111,7 +133,7 @@ export function ProtocolListStatic({ protocols, isAuthenticated }: Props) {
                   <td className="p-4">{index + 1}</td>
                   <td className="p-4 font-medium">{protocol.name}</td>
                   <td className="p-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getScoreColor(protocol.grade)}`}>
                       {protocol.grade || 'N/A'} {protocol.score_overall || 0}
                     </span>
                   </td>
