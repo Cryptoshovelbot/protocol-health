@@ -1,67 +1,94 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Button } from './ui/button';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600" />
-            <span className="font-bold text-xl">Protocol Health</span>
-          </Link>
-          
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link href="/protocols" className="text-sm font-medium hover:text-primary transition-colors">
-              Protocols
-            </Link>
-          </nav>
-        </div>
+    <header className="border-b bg-background">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-600 rounded-lg" />
+          <span className="font-bold text-xl">Protocol Health</span>
+        </Link>
 
-        <div className="hidden md:flex items-center gap-4">
-          <Link href="/login">
-            <Button variant="ghost">Login</Button>
+        <nav className="hidden md:flex items-center gap-6">
+          <Link 
+            href="/" 
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              pathname === '/' ? 'text-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            Home
           </Link>
-          <Link href="/signup">
-            <Button>Sign Up</Button>
+          <Link 
+            href="/protocols" 
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              pathname === '/protocols' ? 'text-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            Protocols
           </Link>
-        </div>
+        </nav>
 
-        <button
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="flex items-center gap-3">
+          {loading ? (
+            <div className="w-20 h-9 bg-muted animate-pulse rounded-md" />
+          ) : user ? (
+            <>
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="sm">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
       </div>
-
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t">
-          <nav className="flex flex-col gap-4 p-4">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link href="/protocols" className="text-sm font-medium hover:text-primary transition-colors">
-              Protocols
-            </Link>
-            <Link href="/login">
-              <Button variant="ghost" className="w-full">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="w-full">Sign Up</Button>
-            </Link>
-          </nav>
-        </div>
-      )}
     </header>
   );
 }
