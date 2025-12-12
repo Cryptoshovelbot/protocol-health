@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: 'Protocol Health',
     images: [
       {
-        url: '/og-image.png',
+        url: '/twitter-card.png',
         width: 1200,
         height: 630,
         alt: 'Protocol Health - DeFi Risk Intelligence',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Protocol Health - DeFi Risk Intelligence',
     description: 'S&P-style safety ratings for 200+ DeFi protocols.',
-    images: ['/og-image.png'],
+    images: ['/twitter-card.png'],
     creator: '@protocolhealth_',
   },
 };
