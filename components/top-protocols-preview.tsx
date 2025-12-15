@@ -30,10 +30,10 @@ export function TopProtocolsPreview({ protocols }: TopProtocolsPreviewProps) {
   };
 
   const getGradientClass = (grade: string) => {
-    if (grade.startsWith('A')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white font-bold text-xl shadow-xl';
-    if (grade.startsWith('B')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-xl shadow-xl';
-    if (grade.startsWith('C')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-xl shadow-xl';
-    return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold text-xl shadow-xl';
+    if (grade.startsWith('A')) return 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white font-bold text-xl shadow-xl';
+    if (grade.startsWith('B')) return 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-xl shadow-xl';
+    if (grade.startsWith('C')) return 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-xl shadow-xl';
+    return 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold text-xl shadow-xl';
   };
 
   return (
@@ -88,7 +88,7 @@ export function TopProtocolsPreview({ protocols }: TopProtocolsPreviewProps) {
         <div className="text-center">
           <Link href="/protocols">
             <button className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-              View All {protocols.length} Protocols
+              View All Protocols
               <ArrowRight className="h-5 w-5" />
             </button>
           </Link>
