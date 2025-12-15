@@ -77,7 +77,7 @@ export function ScoreHistoryChart({ data, protocolName }: ScoreHistoryChartProps
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="p-6">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={formattedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
