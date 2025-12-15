@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ScoreBreakdownChart } from '@/components/score-breakdown-chart';
 import { SecurityHistory } from '@/components/security-history';
+import { ScoreHistoryChart } from '@/components/score-history-chart';
 import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 import { createClient } from '@supabase/supabase-js';
@@ -35,7 +36,19 @@ async function getProtocolData(slug: string) {
       .eq('protocol_slug', slug)
       .order('exploit_date', { ascending: false });
 
-    return { ...protocol, security_incidents: incidents || [] };
+    // Fetch score history (last 7 days)
+    const { data: history } = await supabase
+      .from('protocol_history')
+      .select('date, score_overall')
+      .eq('protocol_id', protocol.id)
+      .order('date', { ascending: true })
+      .limit(7);
+
+    return { 
+      ...protocol, 
+      security_incidents: incidents || [],
+      score_history: history || []
+    };
   } catch (error) {
     console.error('Error fetching protocol:', error);
     return null;
@@ -134,7 +147,7 @@ export default async function ProtocolDetailPage(props: {
           <div className="mb-8">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-4xl font-bold mb-2">{protocol.name} Protocol</h1>
+                <h1 className="text-4xl font-bold mb-2">{protocol.name}</h1>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Overall Score:</span>
@@ -162,6 +175,11 @@ export default async function ProtocolDetailPage(props: {
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
+              <ScoreHistoryChart 
+                data={protocol.score_history}
+                protocolName={protocol.name}
+              />
+
               <Card>
                 <CardHeader>
                   <CardTitle>Score Breakdown</CardTitle>

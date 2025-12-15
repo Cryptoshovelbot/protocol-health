@@ -44,14 +44,14 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
     
     if (change > 0) {
       return (
-        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full mr-2">
+        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full ml-2">
           +{change}
         </span>
       );
     }
     
     return (
-      <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full mr-2">
+      <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full ml-2">
         {change}
       </span>
     );
@@ -96,13 +96,13 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
               <div className="bg-card rounded-lg border-2 p-5 hover:border-primary hover:shadow-xl transition-all duration-200 hover:scale-[1.01]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white font-bold">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-white font-bold">
                       #{index + 1}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        {getRankChangeBadge(protocol.id)}
+                      <div className="flex items-center mb-1">
                         <h3 className="font-bold text-lg">{protocol.name}</h3>
+                        {getRankChangeBadge(protocol.id)}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span>{protocol.chain}</span>
