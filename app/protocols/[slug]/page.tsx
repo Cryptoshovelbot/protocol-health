@@ -99,16 +99,28 @@ export default async function ProtocolDetailPage(props: {
     'Regulatory uncertainty',
   ];
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-1 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <Link href="/protocols">
-            <Button variant="ghost" className="mb-6">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to All Protocols
+  
+  const strengths: string[] = [];
+  if (protocol.age_days > 1000) strengths.push(`Battle-tested (${Math.floor(protocol.age_days / 365)}+ years)`);
+  else if (protocol.age_days > 500) strengths.push('Established protocol');
+  if (protocol.tvl > 5000000000) strengths.push('Massive liquidity ($5B+ TVL)');
+  else if (protocol.tvl > 1000000000) strengths.push('High Total Value Locked');
+  if (breakdown.security.score >= 25) strengths.push('Strong security posture');
+  else if (breakdown.security.score >= 20) strengths.push('Regular security audits');
+  if (breakdown.decentralization.score >= 15) {
+    if (protocol.chain === 'Multi-chain') strengths.push('Multi-chain deployment');
+    else strengths.push(`Deployed on ${protocol.chain}`);
+  }
+  if (breakdown.community.score >= 8) strengths.push('Active community engagement');
+  if (strengths.length < 3) strengths.push('Regular security monitoring');
+  
+  const considerations: string[] = [];
+  if (breakdown.security.score < 20) considerations.push('Limited audit history');
+  if (protocol.age_days < 365) considerations.push('Relatively new protocol');
+  if (breakdown.tvlStability.score < 15) considerations.push('TVL volatility concerns');
+  if (breakdown.decentralization.score < 12) considerations.push('Centralization risks');
+  considerations.push('Smart contract risks', 'Market volatility exposure', 'Regulatory uncertainty');
+  const finalConsiderations = considerations.slice(0, 5);
             </Button>
           </Link>
 
@@ -183,7 +195,7 @@ export default async function ProtocolDetailPage(props: {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {considerations.map((consideration: string, i: number) => (
+                      {finalConsiderations.map((consideration: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-600 mt-1">•</span>
                           <span className="text-sm">{consideration}</span>
