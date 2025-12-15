@@ -138,7 +138,7 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
               Sign up to view all {protocols.length} protocols with detailed risk analysis
             </p>
             <Link href="/signup">
-              <Button size="lg">Sign Up Free</Button>
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-xl transition-all duration-200 hover:scale-105">Sign Up Free</Button>
             </Link>
           </div>
         )}
