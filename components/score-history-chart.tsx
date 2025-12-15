@@ -79,7 +79,7 @@ export function ScoreHistoryChart({ data, protocolName }: ScoreHistoryChartProps
       </CardHeader>
       <CardContent className="p-6">
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={formattedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+          <LineChart data={formattedData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
               dataKey="displayDate" 
