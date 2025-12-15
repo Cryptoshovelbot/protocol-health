@@ -46,7 +46,7 @@ export default async function ProtocolDetailPage(props: {
 
   const breakdown = {
     security: { 
-      score: Math.round((protocol.score_security || 25) / 30 * 30), 
+      score: protocol.score_security || 0, 
       max: 30,
       details: {
         hasAudits: true,
@@ -56,12 +56,12 @@ export default async function ProtocolDetailPage(props: {
       }
     },
     tvlStability: { 
-      score: Math.round((protocol.score_tvl_stability || 15) / 20 * 20), 
+      score: protocol.score_tvl_stability || 0, 
       max: 20,
       volatility: 15
     },
     decentralization: { 
-      score: Math.round((protocol.score_decentralization || 14) / 20 * 20), 
+      score: protocol.score_decentralization || 0, 
       max: 20,
       details: {
         tokenDistribution: 7,
@@ -69,7 +69,7 @@ export default async function ProtocolDetailPage(props: {
       }
     },
     financialHealth: { 
-      score: Math.round((protocol.score_financial || 15) / 20 * 20), 
+      score: protocol.score_financial || 0, 
       max: 20,
       details: {
         revenueTrend: 8,
@@ -77,7 +77,7 @@ export default async function ProtocolDetailPage(props: {
       }
     },
     community: { 
-      score: Math.round((protocol.score_community || 8) / 10 * 10), 
+      score: protocol.score_community || 0, 
       max: 10,
       details: {
         githubActivity: 4,
