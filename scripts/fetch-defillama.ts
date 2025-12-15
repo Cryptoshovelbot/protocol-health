@@ -16,8 +16,41 @@ interface DefiLlamaProtocol {
   audit_links?: string[];
 }
 
-function calculateScoresV2(protocol: DefiLlamaProtocol) {
-  // SECURITY (35 points max) - Increased from 30
+async function getExploitPenalty(slug: string, supabase: any): Promise<number> {
+  const { data: exploits } = await supabase
+    .from('protocol_exploits')
+    .select('exploit_date, amount_lost_usd')
+    .eq('protocol_slug', slug);
+
+  if (!exploits || exploits.length === 0) return 0;
+
+  let penalty = 0;
+  const now = new Date();
+
+  for (const exploit of exploits) {
+    const exploitDate = new Date(exploit.exploit_date);
+    const daysSince = (now.getTime() - exploitDate.getTime()) / (1000 * 60 * 60 * 24);
+    
+    // Recent exploits are worse
+    if (daysSince < 365) {
+      penalty += 15; // Exploited in last year: -15 points
+    } else if (daysSince < 730) {
+      penalty += 10; // Exploited 1-2 years ago: -10 points
+    } else {
+      penalty += 5; // Exploited 2+ years ago: -5 points
+    }
+    
+    // Large exploits add extra penalty
+    if (exploit.amount_lost_usd > 50000000) {
+      penalty += 5; // $50M+ exploit: additional -5 points
+    }
+  }
+
+  return Math.min(penalty, 25); // Max penalty: -25 points
+}
+
+function calculateScoresV2(protocol: DefiLlamaProtocol, exploitPenalty: number) {
+  // SECURITY (35 points max)
   let security = 15; // Base
   
   // Age scoring (10 points max)
@@ -29,55 +62,46 @@ function calculateScoresV2(protocol: DefiLlamaProtocol) {
   // TVL as security signal (5 points max)
   if (protocol.tvl > 1000000000) security += 5;
   
-  // Audit count (10 points max) - NEW!
+  // Audit count (10 points max)
   const auditCount = protocol.audit_links ? protocol.audit_links.length : 0;
   if (auditCount >= 5) security += 10;
   else if (auditCount >= 3) security += 7;
   else if (auditCount >= 1) security += 4;
   
-  // Exploit penalty (deduct up to -10) - NEW!
-  // For now, we'll add this manually or via external API later
-  // security -= exploitPenalty;
+  // Apply exploit penalty
+  security -= exploitPenalty;
+  security = Math.max(0, security); // Can't go negative
   
   // TVL STABILITY (20 points max)
-  let tvlStability = 10; // Base
-  
-  // TVL size (10 points max)
+  let tvlStability = 10;
   if (protocol.tvl > 5000000000) tvlStability += 10;
   else if (protocol.tvl > 1000000000) tvlStability += 7;
   else if (protocol.tvl > 500000000) tvlStability += 5;
   else if (protocol.tvl > 100000000) tvlStability += 3;
-  
-  // TVL Volatility scoring (will be calculated from history later)
-  // For now, protocols with very high TVL get bonus for stability
   if (protocol.tvl > 10000000000) tvlStability = Math.min(20, tvlStability + 2);
   
   // DECENTRALIZATION (20 points max)
-  let decentralization = 10; // Base
-  
-  // Multi-chain deployment (10 points max)
+  let decentralization = 10;
   if (protocol.chains && protocol.chains.length >= 5) decentralization += 10;
   else if (protocol.chains && protocol.chains.length >= 3) decentralization += 7;
   else if (protocol.chains && protocol.chains.length >= 2) decentralization += 5;
   
-  // FINANCIAL HEALTH (15 points max) - Decreased from 20
-  let financial = 8; // Base
-  
+  // FINANCIAL HEALTH (15 points max)
+  let financial = 8;
   if (protocol.tvl > 5000000000) financial += 7;
   else if (protocol.tvl > 1000000000) financial += 5;
   else if (protocol.tvl > 500000000) financial += 3;
   else if (protocol.tvl > 100000000) financial += 2;
   
   // COMMUNITY (10 points max)
-  let community = 5; // Base
-  
+  let community = 5;
   if (ageInDays > 500) community += 3;
   if (protocol.chains && protocol.chains.length > 1) community += 2;
   
   // TOTAL SCORE
   const total = security + tvlStability + decentralization + financial + community;
   
-  // GRADE (stricter thresholds)
+  // GRADE
   let grade = 'F';
   if (total >= 90) grade = 'A';
   else if (total >= 85) grade = 'A-';
@@ -88,7 +112,7 @@ function calculateScoresV2(protocol: DefiLlamaProtocol) {
   else if (total >= 55) grade = 'C';
   else if (total >= 50) grade = 'D';
   
-  // RISK LEVEL (stricter)
+  // RISK LEVEL
   let risk = 'High';
   if (total >= 85) risk = 'Low';
   else if (total >= 70) risk = 'Medium';
@@ -108,7 +132,7 @@ function calculateScoresV2(protocol: DefiLlamaProtocol) {
 
 async function fetchProtocols() {
   try {
-    console.log('🔍 Fetching protocols from DeFiLlama (Scoring v2.0)...');
+    console.log('🔍 Fetching protocols from DeFiLlama (Scoring v2.1)...');
     const response = await fetch(`${DEFILLAMA_API}/protocols`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
@@ -116,7 +140,7 @@ async function fetchProtocols() {
     const topProtocols = protocols.sort((a, b) => b.tvl - a.tvl).slice(0, 50);
     
     console.log(`📊 Found ${topProtocols.length} protocols to process`);
-    console.log('🆕 Scoring v2.0: Enhanced security metrics + stricter grading');
+    console.log('🆕 Scoring v2.1: Exploit history integration');
     
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!, 
@@ -128,7 +152,8 @@ async function fetchProtocols() {
     
     for (const protocol of topProtocols) {
       try {
-        const scores = calculateScoresV2(protocol);
+        const exploitPenalty = await getExploitPenalty(protocol.slug, supabase);
+        const scores = calculateScoresV2(protocol, exploitPenalty);
         
         const protocolData = {
           name: protocol.name, 
@@ -160,7 +185,8 @@ async function fetchProtocols() {
           console.error(`❌ Error: ${protocol.name}`); 
           errors++; 
         } else { 
-          console.log(`✅ ${protocol.name}: ${scores.grade} (${scores.score_overall})`);
+          const exploitFlag = exploitPenalty > 0 ? ` ⚠️ (-${exploitPenalty} exploit penalty)` : '';
+          console.log(`✅ ${protocol.name}: ${scores.grade} (${scores.score_overall})${exploitFlag}`);
           updated++;
           
           if (upserted?.id) {
@@ -178,7 +204,10 @@ async function fetchProtocols() {
             });
           }
         }
-      } catch (error) { errors++; }
+      } catch (error) { 
+        console.error(`Error processing ${protocol.name}:`, error);
+        errors++; 
+      }
     }
     
     // Calculate ranks
@@ -196,7 +225,7 @@ async function fetchProtocols() {
       }
     }
     
-    console.log(`\n🎉 Scoring v2.0 Complete!`);
+    console.log(`\n🎉 Scoring v2.1 Complete!`);
     console.log(`✅ Updated: ${updated}, ❌ Errors: ${errors}`);
   } catch (error) { 
     console.error('Failed:', error); 
