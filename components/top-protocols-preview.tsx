@@ -30,10 +30,10 @@ export function TopProtocolsPreview({ protocols }: TopProtocolsPreviewProps) {
   };
 
   const getGradientClass = (grade: string) => {
-    if (grade.startsWith('A')) return 'inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white font-bold text-2xl shadow-xl';
-    if (grade.startsWith('B')) return 'inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-2xl shadow-xl';
-    if (grade.startsWith('C')) return 'inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-2xl shadow-xl';
-    return 'inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold text-2xl shadow-xl';
+    if (grade.startsWith('A')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white font-bold text-xl shadow-xl';
+    if (grade.startsWith('B')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-xl shadow-xl';
+    if (grade.startsWith('C')) return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-xl shadow-xl';
+    return 'inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold text-xl shadow-xl';
   };
 
   return (
