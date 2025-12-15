@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Search, Lock } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Search, Lock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface Protocol {
@@ -43,14 +44,14 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
     
     if (change > 0) {
       return (
-        <span className="text-xs font-semibold text-green-600">
+        <span className="text-xs font-semibold text-green-600 mr-2">
           +{change}
         </span>
       );
     }
     
     return (
-      <span className="text-xs font-semibold text-red-600">
+      <span className="text-xs font-semibold text-red-600 mr-2">
         {change}
       </span>
     );
@@ -78,96 +79,73 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50 border-b">
-                <tr>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Rank</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Protocol</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Grade</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Risk</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">TVL</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Chain</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProtocols.map((protocol, index) => (
-                  <tr
-                    key={protocol.id}
-                    className="border-b hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="py-4 px-4">
-                      <span className="font-mono text-sm text-muted-foreground">
-                        #{index + 1}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
+        <div className="grid gap-4">
+          {filteredProtocols.map((protocol, index) => (
+            <Link
+              key={protocol.id}
+              href={`/protocols/${protocol.slug}`}
+              className="block"
+            >
+              <div className="bg-card rounded-lg border p-4 hover:border-primary transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 flex-1">
+                    <span className="font-mono text-sm text-muted-foreground w-12">
+                      #{index + 1}
+                    </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
                         {getRankChangeBadge(protocol.id)}
-                        <Link
-                          href={`/protocols/${protocol.slug}`}
-                          className="font-medium hover:text-primary transition-colors"
-                        >
-                          {protocol.name}
-                        </Link>
+                        <h3 className="font-semibold text-lg">{protocol.name}</h3>
                       </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span>{protocol.chain}</span>
+                        <span>•</span>
+                        <span>{formatTVL(protocol.tvl)} TVL</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <Badge 
+                        variant="outline"
+                        className={`text-base font-bold px-3 py-1 ${
                           protocol.grade.startsWith('A')
-                            ? 'bg-green-100 text-green-800'
+                            ? 'text-green-700 border-green-700'
                             : protocol.grade.startsWith('B')
-                            ? 'bg-blue-100 text-blue-800'
+                            ? 'text-blue-700 border-blue-700'
                             : protocol.grade.startsWith('C')
-                            ? 'bg-orange-100 text-orange-800'
-                            : 'bg-red-100 text-red-800'
+                            ? 'text-orange-600 border-orange-600'
+                            : 'text-red-600 border-red-600'
                         }`}
                       >
-                        {protocol.grade}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="text-sm text-muted-foreground">
-                        {protocol.risk_level}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="text-sm font-medium">
-                        {formatTVL(protocol.tvl)}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="text-sm text-muted-foreground">
-                        {protocol.chain}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {!isAuthenticated && protocols.length > 10 && (
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
-              <div className="flex flex-col items-center justify-center py-12 px-4">
-                <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold mb-2">
-                  Unlock Full Protocol List
-                </h3>
-                <p className="text-muted-foreground mb-6 text-center max-w-md">
-                  Sign up to view all {protocols.length} protocols with detailed
-                  risk analysis
-                </p>
-                <Link href="/signup">
-                  <Button size="lg">Sign Up Free</Button>
-                </Link>
+                        {protocol.grade} ({protocol.score_overall})
+                      </Badge>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {protocol.risk_level} Risk
+                      </div>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            </Link>
+          ))}
         </div>
+
+        {!isAuthenticated && protocols.length > 10 && (
+          <div className="mt-8 text-center py-12 px-4 bg-muted/30 rounded-lg">
+            <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">
+              Unlock Full Protocol List
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Sign up to view all {protocols.length} protocols with detailed risk analysis
+            </p>
+            <Link href="/signup">
+              <Button size="lg">Sign Up Free</Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
