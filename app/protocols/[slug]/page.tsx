@@ -197,7 +197,7 @@ export default async function ProtocolDetailPage(props: {
                     <ul className="space-y-2">
                       {strengths.map((strength: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-green-600 mt-1">•</span>
+                          <span className="text-green-600">•</span>
                           <span className="text-sm">{strength}</span>
                         </li>
                       ))}
@@ -216,7 +216,7 @@ export default async function ProtocolDetailPage(props: {
                     <ul className="space-y-2">
                       {finalConsiderations.map((consideration: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-amber-600 mt-1">•</span>
+                          <span className="text-amber-600">•</span>
                           <span className="text-sm">{consideration}</span>
                         </li>
                       ))}
