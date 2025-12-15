@@ -29,23 +29,23 @@ export default function HowItWorksPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Grade A (90-100)</span>
-                  <Badge className="bg-grade-a text-white">Exceptional Safety</Badge>
+                  <Badge className="bg-green-600 text-white">Exceptional Safety</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Grade B (70-89)</span>
-                  <Badge className="bg-grade-b text-white">Strong Performance</Badge>
+                  <Badge className="bg-blue-600 text-white">Strong Performance</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Grade C (60-69)</span>
-                  <Badge className="bg-grade-c text-white">Acceptable Risk</Badge>
+                  <Badge className="bg-orange-500 text-white">Acceptable Risk</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Grade D (50-59)</span>
-                  <Badge variant="destructive">High Risk</Badge>
+                  <Badge className="bg-red-500 text-white">High Risk</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Grade F (0-49)</span>
-                  <Badge variant="destructive">Very High Risk</Badge>
+                  <Badge className="bg-red-700 text-white">Very High Risk</Badge>
                 </div>
               </div>
             </CardContent>
