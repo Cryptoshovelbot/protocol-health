@@ -65,8 +65,12 @@ async function fetchProtocols() {
     const protocols: DefiLlamaProtocol[] = await response.json();
     const topProtocols = protocols.sort((a, b) => b.tvl - a.tvl).slice(0, 50);
     console.log(`📊 Found ${topProtocols.length} protocols to process`);
+    
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    
     let inserted = 0, updated = 0, errors = 0;
+    const today = new Date().toISOString().split('T')[0];
+    
     for (const protocol of topProtocols) {
       try {
         const scores = calculateScores(protocol);
@@ -79,13 +83,35 @@ async function fetchProtocols() {
           score_decentralization: scores.score_decentralization, score_financial: scores.score_financial, score_community: scores.score_community,
           grade: scores.grade, risk_level: scores.risk,
         };
-        const { error } = await supabase.from('protocols').upsert(protocolData, { onConflict: 'slug' });
-        if (error) { console.error(`❌ Error processing ${protocol.name}:`, error); errors++; }
-        else { console.log(`✅ Updated: ${protocol.name}`); updated++; }
-      } catch (error) { console.error(`❌ Error processing ${protocol.name}:`, error); errors++; }
+        
+        const { data: upserted, error } = await supabase.from('protocols').upsert(protocolData, { onConflict: 'slug' }).select('id').single();
+        
+        if (error) { console.error(`❌ Error: ${protocol.name}`); errors++; }
+        else { 
+          console.log(`✅ Updated: ${protocol.name}`); 
+          updated++;
+          
+          if (upserted?.id) {
+            await supabase.from('protocol_history').insert({
+              protocol_id: upserted.id, date: today, score_overall: scores.score_overall,
+              score_security: scores.score_security, score_tvl_stability: scores.score_tvl_stability,
+              score_decentralization: scores.score_decentralization, score_financial: scores.score_financial,
+              score_community: scores.score_community, tvl: Math.floor(protocol.tvl), grade: scores.grade,
+            });
+          }
+        }
+      } catch (error) { errors++; }
     }
-    console.log('\n🎉 Done!'); console.log(`✨ Inserted: ${inserted}`); console.log(`✅ Updated: ${updated}`); console.log(`❌ Errors: ${errors}`);
-  } catch (error) { console.error('Failed to fetch protocols:', error); process.exit(1); }
+    
+    const { data: allProtocols } = await supabase.from('protocols').select('id, score_overall').order('score_overall', { ascending: false });
+    if (allProtocols) {
+      for (let i = 0; i < allProtocols.length; i++) {
+        await supabase.from('protocol_history').update({ rank: i + 1 }).eq('protocol_id', allProtocols[i].id).eq('date', today);
+      }
+    }
+    
+    console.log(`\n🎉 Done! Updated: ${updated}, Errors: ${errors}`);
+  } catch (error) { console.error('Failed:', error); process.exit(1); }
 }
 
 fetchProtocols();
