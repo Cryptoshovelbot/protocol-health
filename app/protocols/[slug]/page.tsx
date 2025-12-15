@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScoreBreakdownChart } from '@/components/score-breakdown-chart';
+import { SecurityHistory } from '@/components/security-history';
 import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 import { createClient } from '@supabase/supabase-js';
@@ -27,7 +28,14 @@ async function getProtocolData(slug: string) {
       return null;
     }
 
-    return protocol;
+    // Fetch security incidents
+    const { data: incidents } = await supabase
+      .from('protocol_exploits')
+      .select('exploit_date, amount_lost_usd, description, source_url')
+      .eq('protocol_slug', slug)
+      .order('exploit_date', { ascending: false });
+
+    return { ...protocol, security_incidents: incidents || [] };
   } catch (error) {
     console.error('Error fetching protocol:', error);
     return null;
@@ -47,12 +55,12 @@ export default async function ProtocolDetailPage(props: {
   const breakdown = {
     security: { 
       score: protocol.score_security || 0, 
-      max: 30,
+      max: 35,
       details: {
         hasAudits: true,
-        auditCount: 0,
+        auditCount: protocol.audit_count || 0,
         age: protocol.age_days || 0,
-        exploitHistory: 0
+        exploitHistory: protocol.security_incidents?.length || 0
       }
     },
     tvlStability: { 
@@ -70,7 +78,7 @@ export default async function ProtocolDetailPage(props: {
     },
     financialHealth: { 
       score: protocol.score_financial || 0, 
-      max: 20,
+      max: 15,
       details: {
         revenueTrend: 8,
         treasurySize: 7
@@ -86,7 +94,7 @@ export default async function ProtocolDetailPage(props: {
     },
   };
 
-const strengths: string[] = [];
+  const strengths: string[] = [];
   if (protocol.age_days > 1000) strengths.push(`Battle-tested (${Math.floor(protocol.age_days / 365)}+ years)`);
   else if (protocol.age_days > 500) strengths.push('Established protocol');
   if (protocol.tvl > 5000000000) strengths.push('Massive liquidity ($5B+ TVL)');
@@ -98,6 +106,7 @@ const strengths: string[] = [];
     else strengths.push(`Deployed on ${protocol.chain}`);
   }
   if (breakdown.community.score >= 8) strengths.push('Active community engagement');
+  if (protocol.security_incidents?.length === 0) strengths.push('No security incidents');
   if (strengths.length < 3) strengths.push('Regular security monitoring');
   
   const considerations: string[] = [];
@@ -105,7 +114,9 @@ const strengths: string[] = [];
   if (protocol.age_days < 365) considerations.push('Relatively new protocol');
   if (breakdown.tvlStability.score < 15) considerations.push('TVL volatility concerns');
   if (breakdown.decentralization.score < 12) considerations.push('Centralization risks');
+  if (protocol.security_incidents?.length > 0) considerations.push('Past security incidents');
   considerations.push('Smart contract risks', 'Market volatility exposure', 'Regulatory uncertainty');
+  const finalConsiderations = considerations.slice(0, 5);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -130,9 +141,10 @@ const strengths: string[] = [];
                     <Badge 
                       variant="outline" 
                       className={`text-lg px-3 py-1 font-bold ${
-                        protocol.grade.startsWith('A') ? 'text-grade-a border-grade-a' : 
-                        protocol.grade.startsWith('B') ? 'text-grade-b border-grade-b' : 
-                        'text-grade-c border-grade-c'
+                        protocol.grade.startsWith('A') ? 'text-green-700 border-green-700' : 
+                        protocol.grade.startsWith('B') ? 'text-blue-700 border-blue-700' : 
+                        protocol.grade.startsWith('C') ? 'text-orange-600 border-orange-600' :
+                        'text-red-600 border-red-600'
                       }`}
                     >
                       {protocol.grade} ({protocol.score_overall}/100)
@@ -161,6 +173,11 @@ const strengths: string[] = [];
                   <ScoreBreakdownChart breakdown={breakdown} />
                 </CardContent>
               </Card>
+
+              <SecurityHistory 
+                incidents={protocol.security_incidents} 
+                protocolName={protocol.name}
+              />
 
               <div className="grid md:grid-cols-2 gap-6">
                 <Card>
@@ -191,7 +208,7 @@ const strengths: string[] = [];
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {considerations.map((consideration: string, i: number) => (
+                      {finalConsiderations.map((consideration: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-600 mt-1">•</span>
                           <span className="text-sm">{consideration}</span>
@@ -219,21 +236,23 @@ const strengths: string[] = [];
                       <p className="text-xl font-semibold">{formatNumber(protocol.volume_24h)}</p>
                     </div>
                   )}
-                  {protocol.users_count && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Active Users</p>
-                      <p className="text-xl font-semibold">{protocol.users_count.toLocaleString()}</p>
-                    </div>
-                  )}
                   {protocol.age_days && (
                     <div>
                       <p className="text-sm text-muted-foreground">Protocol Age</p>
                       <p className="text-xl font-semibold">{Math.floor(protocol.age_days / 365)} years</p>
                     </div>
                   )}
+                  {protocol.audit_count !== undefined && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Security Audits</p>
+                      <p className="text-xl font-semibold">{protocol.audit_count || 'Not disclosed'}</p>
+                    </div>
+                  )}
                   <div>
-                    <p className="text-sm text-muted-foreground">Last Exploit</p>
-                    <p className="text-xl font-semibold text-green-600">None</p>
+                    <p className="text-sm text-muted-foreground">Security Incidents</p>
+                    <p className={`text-xl font-semibold ${protocol.security_incidents?.length === 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                      {protocol.security_incidents?.length === 0 ? 'None' : protocol.security_incidents?.length}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
