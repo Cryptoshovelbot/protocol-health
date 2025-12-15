@@ -175,11 +175,6 @@ export default async function ProtocolDetailPage(props: {
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <ScoreHistoryChart 
-                data={protocol.score_history}
-                protocolName={protocol.name}
-              />
-
               <Card>
                 <CardHeader>
                   <CardTitle>Score Breakdown</CardTitle>
@@ -192,7 +187,10 @@ export default async function ProtocolDetailPage(props: {
                 </CardContent>
               </Card>
 
-              <SecurityHistory 
+              <ScoreHistoryChart 
+                data={protocol.score_history}
+                protocolName={protocol.name}
+              />
                 incidents={protocol.security_incidents} 
                 protocolName={protocol.name}
               />
