@@ -122,7 +122,7 @@ export default async function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+        <section className="py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">
               Start Making Safer DeFi Decisions Today
