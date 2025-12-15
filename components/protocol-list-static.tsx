@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Search, Lock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Search, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 interface Protocol {
@@ -25,7 +25,6 @@ interface ProtocolListStaticProps {
 
 export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {} }: ProtocolListStaticProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showLocked, setShowLocked] = useState(false);
 
   const visibleProtocols = isAuthenticated ? protocols : protocols.slice(0, 10);
   const filteredProtocols = visibleProtocols.filter((protocol) =>
@@ -38,31 +37,22 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
     return `$${tvl.toLocaleString()}`;
   };
 
-  const getRankChangeDisplay = (protocolId: string) => {
+  const getRankChangeBadge = (protocolId: string) => {
     const change = rankChanges[protocolId];
-    if (!change || change === 0) {
-      return (
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <Minus className="h-3 w-3" />
-          <span className="text-xs">--</span>
-        </div>
-      );
-    }
+    if (!change || change === 0) return null;
     
     if (change > 0) {
       return (
-        <div className="flex items-center gap-1 text-green-600">
-          <TrendingUp className="h-3 w-3" />
-          <span className="text-xs font-semibold">+{change}</span>
-        </div>
+        <span className="text-xs font-semibold text-green-600">
+          +{change}
+        </span>
       );
     }
     
     return (
-      <div className="flex items-center gap-1 text-red-600">
-        <TrendingDown className="h-3 w-3" />
-        <span className="text-xs font-semibold">{change}</span>
-      </div>
+      <span className="text-xs font-semibold text-red-600">
+        {change}
+      </span>
     );
   };
 
@@ -94,7 +84,6 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
               <thead className="bg-muted/50 border-b">
                 <tr>
                   <th className="text-left py-3 px-4 font-semibold text-sm">Rank</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm">Change</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm">Protocol</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm">Grade</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm">Risk</th>
@@ -114,15 +103,15 @@ export function ProtocolListStatic({ protocols, isAuthenticated, rankChanges = {
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      {getRankChangeDisplay(protocol.id)}
-                    </td>
-                    <td className="py-4 px-4">
-                      <Link
-                        href={`/protocols/${protocol.slug}`}
-                        className="font-medium hover:text-primary transition-colors"
-                      >
-                        {protocol.name}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        {getRankChangeBadge(protocol.id)}
+                        <Link
+                          href={`/protocols/${protocol.slug}`}
+                          className="font-medium hover:text-primary transition-colors"
+                        >
+                          {protocol.name}
+                        </Link>
+                      </div>
                     </td>
                     <td className="py-4 px-4">
                       <span
