@@ -1,12 +1,31 @@
 import Link from 'next/link';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { TopProtocolsPreview } from '@/components/top-protocols-preview';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Shield, TrendingUp, Bell, BarChart3, ArrowRight, Zap, Users } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
-export default function Home() {
+async function getTopProtocols() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const { data } = await supabase
+    .from('protocols')
+    .select('*')
+    .order('score_overall', { ascending: false })
+    .limit(10);
+
+  return data || [];
+}
+
+export default async function Home() {
+  const topProtocols = await getTopProtocols();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -20,66 +39,61 @@ export default function Home() {
                 Know Which DeFi Protocols<br />You Can Trust
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                Real-time risk scoring for 30+ DeFi protocols. Make informed decisions with comprehensive security analysis updated daily.
+                Real-time risk scoring for 50+ DeFi protocols. Make informed decisions with comprehensive security analysis updated daily.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/protocols">
                   <Button size="lg" className="text-lg px-8">
-                    View Risk Scores
+                    View All Protocols
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link href="/protocols">
+                <Link href="/how-it-works">
                   <Button size="lg" variant="outline" className="text-lg px-8">
-                    See All Protocols
+                    How It Works
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid md:grid-cols-3 gap-8 mt-16">
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">30+</div>
-                  <p className="text-muted-foreground">Protocols Analyzed</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-purple-600 mb-2">$100B+</div>
-                  <p className="text-muted-foreground">Total Value Tracked</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-green-600 mb-2">Daily</div>
-                  <p className="text-muted-foreground">Updates</p>
-                </CardContent>
-              </Card>
+            {/* Trust Badges */}
+            <div className="flex flex-wrap justify-center gap-8 text-center">
+              <div>
+                <div className="text-3xl font-bold text-blue-600">50+</div>
+                <div className="text-sm text-muted-foreground">Protocols Tracked</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-purple-600">Daily</div>
+                <div className="text-sm text-muted-foreground">Updates</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-green-600">5</div>
+                <div className="text-sm text-muted-foreground">Risk Dimensions</div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Features */}
+        {/* Top 10 Protocols Section */}
+        <TopProtocolsPreview protocols={topProtocols} />
+
+        {/* Features Section */}
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Comprehensive DeFi Risk Analysis
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Every protocol is evaluated across 5 critical dimensions
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Why Protocol Health?</h2>
+              <p className="text-lg text-muted-foreground">
+                The most comprehensive DeFi risk analysis platform
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               <Card>
                 <CardHeader>
                   <Shield className="h-12 w-12 text-blue-600 mb-4" />
-                  <CardTitle>Security Analysis</CardTitle>
+                  <CardTitle>S&P-Style Ratings</CardTitle>
                   <CardDescription>
-                    Audit history, age, exploit tracking, and smart contract security
+                    Professional grade scoring system with A-F ratings based on 5 key risk dimensions
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -87,49 +101,19 @@ export default function Home() {
               <Card>
                 <CardHeader>
                   <TrendingUp className="h-12 w-12 text-green-600 mb-4" />
-                  <CardTitle>TVL Stability</CardTitle>
+                  <CardTitle>Real-Time Updates</CardTitle>
                   <CardDescription>
-                    Track liquidity trends and protocol stability over time
+                    Scores updated daily with exploit tracking and security incident monitoring
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <Users className="h-12 w-12 text-purple-600 mb-4" />
-                  <CardTitle>Decentralization</CardTitle>
+                  <BarChart3 className="h-12 w-12 text-purple-600 mb-4" />
+                  <CardTitle>Transparent Methodology</CardTitle>
                   <CardDescription>
-                    Token distribution and governance activity metrics
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <BarChart3 className="h-12 w-12 text-orange-600 mb-4" />
-                  <CardTitle>Financial Health</CardTitle>
-                  <CardDescription>
-                    Revenue trends, treasury analysis, and sustainability
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Zap className="h-12 w-12 text-yellow-600 mb-4" />
-                  <CardTitle>Community Strength</CardTitle>
-                  <CardDescription>
-                    Developer activity and social engagement tracking
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Bell className="h-12 w-12 text-red-600 mb-4" />
-                  <CardTitle>Real-time Updates</CardTitle>
-                  <CardDescription>
-                    Stay informed with daily score updates
+                    Open scoring system based on audits, TVL, decentralization, and security history
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -137,90 +121,21 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How it works */}
-        <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-white">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                How It Works
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Simple, transparent risk scoring
-              </p>
-            </div>
-
-            <div className="space-y-8">
-              <div className="flex gap-4 items-start">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
-                  1
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Data Collection</h3>
-                  <p className="text-muted-foreground">
-                    We aggregate data from DeFiLlama, audit firms, and on-chain sources
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg">
-                  2
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Analysis Engine</h3>
-                  <p className="text-muted-foreground">
-                    Our algorithm evaluates 5 key dimensions with weighted scoring
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg">
-                  3
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Grade Assignment</h3>
-                  <p className="text-muted-foreground">
-                    Protocols receive letter grades (A-F) and risk levels (Low/Medium/High)
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-lg">
-                  4
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Your Decision</h3>
-                  <p className="text-muted-foreground">
-                    Use our scores to make informed investment decisions
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-20 px-4">
+        {/* CTA Section */}
+        <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
           <div className="max-w-4xl mx-auto text-center">
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
-              <CardContent className="pt-12 pb-12">
-                <Shield className="h-16 w-16 text-blue-600 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold mb-4">
-                  Start Making Safer DeFi Decisions
-                </h2>
-                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  View risk scores for 30+ DeFi protocols
-                </p>
-                <Link href="/protocols">
-                  <Button size="lg" className="text-lg px-8">
-                    View Risk Scores
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <h2 className="text-4xl font-bold mb-6">
+              Start Making Safer DeFi Decisions Today
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Join thousands of investors using Protocol Health to evaluate DeFi protocols
+            </p>
+            <Link href="/protocols">
+              <Button size="lg" variant="secondary" className="text-lg px-8">
+                Explore All Protocols
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </section>
       </main>
