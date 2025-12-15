@@ -29,14 +29,12 @@ async function getProtocolData(slug: string) {
       return null;
     }
 
-    // Fetch security incidents
     const { data: incidents } = await supabase
       .from('protocol_exploits')
       .select('exploit_date, amount_lost_usd, description, source_url')
       .eq('protocol_slug', slug)
       .order('exploit_date', { ascending: false });
 
-    // Fetch score history (last 7 days)
     const { data: history } = await supabase
       .from('protocol_history')
       .select('date, score_overall')
@@ -66,45 +64,11 @@ export default async function ProtocolDetailPage(props: {
   }
 
   const breakdown = {
-    security: { 
-      score: protocol.score_security || 0, 
-      max: 35,
-      details: {
-        hasAudits: true,
-        auditCount: protocol.audit_count || 0,
-        age: protocol.age_days || 0,
-        exploitHistory: protocol.security_incidents?.length || 0
-      }
-    },
-    tvlStability: { 
-      score: protocol.score_tvl_stability || 0, 
-      max: 20,
-      volatility: 15
-    },
-    decentralization: { 
-      score: protocol.score_decentralization || 0, 
-      max: 20,
-      details: {
-        tokenDistribution: 7,
-        governanceActivity: 7
-      }
-    },
-    financialHealth: { 
-      score: protocol.score_financial || 0, 
-      max: 15,
-      details: {
-        revenueTrend: 8,
-        treasurySize: 7
-      }
-    },
-    community: { 
-      score: protocol.score_community || 0, 
-      max: 10,
-      details: {
-        githubActivity: 4,
-        socialEngagement: 4
-      }
-    },
+    security: { score: protocol.score_security || 0, max: 35 },
+    tvlStability: { score: protocol.score_tvl_stability || 0, max: 20 },
+    decentralization: { score: protocol.score_decentralization || 0, max: 20 },
+    financialHealth: { score: protocol.score_financial || 0, max: 15 },
+    community: { score: protocol.score_community || 0, max: 10 },
   };
 
   const strengths: string[] = [];
@@ -163,9 +127,7 @@ export default async function ProtocolDetailPage(props: {
                       {protocol.grade} ({protocol.score_overall}/100)
                     </Badge>
                   </div>
-                  <Badge 
-                    variant={protocol.risk_level === 'Low' ? 'success' : protocol.risk_level === 'Medium' ? 'warning' : 'destructive'}
-                  >
+                  <Badge variant={protocol.risk_level === 'Low' ? 'success' : protocol.risk_level === 'Medium' ? 'warning' : 'destructive'}>
                     {protocol.risk_level} Risk
                   </Badge>
                 </div>
@@ -178,22 +140,16 @@ export default async function ProtocolDetailPage(props: {
               <Card>
                 <CardHeader>
                   <CardTitle>Score Breakdown</CardTitle>
-                  <CardDescription>
-                    Detailed analysis across 5 key dimensions
-                  </CardDescription>
+                  <CardDescription>Detailed analysis across 5 key dimensions</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ScoreBreakdownChart breakdown={breakdown} />
                 </CardContent>
               </Card>
 
-              <ScoreHistoryChart 
-                data={protocol.score_history}
-                protocolName={protocol.name}
-              />
-                incidents={protocol.security_incidents} 
-                protocolName={protocol.name}
-              />
+              <ScoreHistoryChart data={protocol.score_history} protocolName={protocol.name} />
+
+              <SecurityHistory incidents={protocol.security_incidents} protocolName={protocol.name} />
 
               <div className="grid md:grid-cols-2 gap-6">
                 <Card>
@@ -246,12 +202,6 @@ export default async function ProtocolDetailPage(props: {
                     <p className="text-sm text-muted-foreground">Total Value Locked</p>
                     <p className="text-2xl font-bold">{formatNumber(protocol.tvl || 0)}</p>
                   </div>
-                  {protocol.volume_24h && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">24h Volume</p>
-                      <p className="text-xl font-semibold">{formatNumber(protocol.volume_24h)}</p>
-                    </div>
-                  )}
                   {protocol.age_days && (
                     <div>
                       <p className="text-sm text-muted-foreground">Protocol Age</p>
@@ -285,12 +235,7 @@ export default async function ProtocolDetailPage(props: {
                   {protocol.website && (
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Website</span>
-                      <a 
-                        href={protocol.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-500 hover:underline"
-                      >
+                      <a href={protocol.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 hover:underline">
                         Visit →
                       </a>
                     </div>
