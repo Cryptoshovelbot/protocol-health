@@ -88,7 +88,7 @@ export function TopProtocolsPreview({ protocols }: TopProtocolsPreviewProps) {
         <div className="text-center">
           <Link href="/protocols">
             <button className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-              View All Protocols
+              View all protocols
               <ArrowRight className="h-5 w-5" />
             </button>
           </Link>
