@@ -86,21 +86,7 @@ export default async function ProtocolDetailPage(props: {
     },
   };
 
-  const strengths = [
-    protocol.age_days > 1000 ? `Battle-tested (${Math.floor(protocol.age_days / 365)}+ years)` : 'Established protocol',
-    protocol.tvl > 1000000000 ? 'High Total Value Locked' : 'Growing TVL',
-    protocol.chain === 'Multi-chain' ? 'Multi-chain deployment' : `Deployed on ${protocol.chain}`,
-    'Regular security monitoring',
-  ];
-
-  const considerations = [
-    'Smart contract risks',
-    'Market volatility exposure',
-    'Regulatory uncertainty',
-  ];
-
-  
-  const strengths: string[] = [];
+const strengths: string[] = [];
   if (protocol.age_days > 1000) strengths.push(`Battle-tested (${Math.floor(protocol.age_days / 365)}+ years)`);
   else if (protocol.age_days > 500) strengths.push('Established protocol');
   if (protocol.tvl > 5000000000) strengths.push('Massive liquidity ($5B+ TVL)');
@@ -120,7 +106,17 @@ export default async function ProtocolDetailPage(props: {
   if (breakdown.tvlStability.score < 15) considerations.push('TVL volatility concerns');
   if (breakdown.decentralization.score < 12) considerations.push('Centralization risks');
   considerations.push('Smart contract risks', 'Market volatility exposure', 'Regulatory uncertainty');
-  const finalConsiderations = considerations.slice(0, 5);
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      
+      <main className="flex-1 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Link href="/protocols">
+            <Button variant="ghost" className="mb-6">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to All Protocols
             </Button>
           </Link>
 
@@ -195,7 +191,7 @@ export default async function ProtocolDetailPage(props: {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {finalConsiderations.map((consideration: string, i: number) => (
+                      {considerations.map((consideration: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-600 mt-1">•</span>
                           <span className="text-sm">{consideration}</span>
