@@ -50,8 +50,8 @@ export function SecurityHistory({ incidents, protocolName }: SecurityHistoryProp
 
   const formatAmount = (amount: number) => {
     if (amount === 0) return 'No funds lost';
-    if (amount >= 1e9) return `$${(amount / 1e9).toFixed(1)}B lost`;
-    if (amount >= 1e6) return `$${(amount / 1e6).toFixed(1)}M lost`;
+    if (amount >= 1000000000) return `$${(amount / 1000000000).toFixed(1)}B lost`;
+    if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M lost`;
     return `$${amount.toLocaleString()} lost`;
   };
 
@@ -82,48 +82,29 @@ export function SecurityHistory({ incidents, protocolName }: SecurityHistoryProp
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {incidents
-            .sort((a, b) => new Date(b.exploit_date).getTime() - new Date(a.exploit_date).getTime())
-            .map((incident, index) => {
-              const severityColor = getSeverityColor(incident.amount_lost_usd);
-              return (
-                <div
-                  key={index}
-                  className={`p-4 rounded-lg border ${severityColor}`}
-                >
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <AlertTriangle className="h-4 w-4" />
-                        <span className="font-semibold">
-                          {formatDate(incident.exploit_date)}
-                        </span>
-                      </div>
-                      <p className="text-sm mb-2">{incident.description}</p>
-                      <Badge variant="outline" className="text-xs">
-                        {formatAmount(incident.amount_lost_usd)}
-                      </Badge>
-                    </div>
-                    {incident.source_url && (
-                      
-                        href={incident.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs flex items-center gap-1 hover:underline flex-shrink-0"
-                      >
-                        Source <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
+          {incidents.sort((a, b) => new Date(b.exploit_date).getTime() - new Date(a.exploit_date).getTime()).map((incident, index) => (
+            <div key={index} className={`p-4 rounded-lg border ${getSeverityColor(incident.amount_lost_usd)}`}>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span className="font-semibold">{formatDate(incident.exploit_date)}</span>
                   </div>
+                  <p className="text-sm mb-2">{incident.description}</p>
+                  <Badge variant="outline" className="text-xs">{formatAmount(incident.amount_lost_usd)}</Badge>
                 </div>
-              );
-            })}
+                {incident.source_url && (
+                  <a href={incident.source_url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1 hover:underline flex-shrink-0">
+                    Source <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-        
         <div className="mt-4 p-3 bg-muted rounded-lg">
           <p className="text-xs text-muted-foreground">
-            💡 <strong>Note:</strong> Security incidents impact the overall protocol score. 
-            Recent incidents have a larger penalty than historical ones.
+            💡 <strong>Note:</strong> Security incidents impact the overall protocol score. Recent incidents have a larger penalty than historical ones.
           </p>
         </div>
       </CardContent>
