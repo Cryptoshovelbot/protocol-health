@@ -64,11 +64,45 @@ export default async function ProtocolDetailPage(props: {
   }
 
   const breakdown = {
-    security: { score: protocol.score_security || 0, max: 35 },
-    tvlStability: { score: protocol.score_tvl_stability || 0, max: 20 },
-    decentralization: { score: protocol.score_decentralization || 0, max: 20 },
-    financialHealth: { score: protocol.score_financial || 0, max: 15 },
-    community: { score: protocol.score_community || 0, max: 10 },
+    security: { 
+      score: protocol.score_security || 0, 
+      max: 35,
+      details: {
+        hasAudits: true,
+        auditCount: protocol.audit_count || 0,
+        age: protocol.age_days || 0,
+        exploitHistory: protocol.security_incidents?.length || 0
+      }
+    },
+    tvlStability: { 
+      score: protocol.score_tvl_stability || 0, 
+      max: 20,
+      volatility: 15
+    },
+    decentralization: { 
+      score: protocol.score_decentralization || 0, 
+      max: 20,
+      details: {
+        tokenDistribution: 7,
+        governanceActivity: 7
+      }
+    },
+    financialHealth: { 
+      score: protocol.score_financial || 0, 
+      max: 15,
+      details: {
+        revenueTrend: 8,
+        treasurySize: 7
+      }
+    },
+    community: { 
+      score: protocol.score_community || 0, 
+      max: 10,
+      details: {
+        githubActivity: 4,
+        socialEngagement: 4
+      }
+    },
   };
 
   const strengths: string[] = [];
