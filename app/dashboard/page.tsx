@@ -37,9 +37,6 @@ export default async function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Dashboard</h1>
-            <form action="/api/auth/signout" method="post">
-              <Button variant="outline" type="submit">Sign Out</Button>
-            </form>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -52,7 +49,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-2">Email:</p>
-                <p className="font-medium">{user.email}</p>
+                <p className="font-mono text-sm">{user.email}</p>
               </CardContent>
             </Card>
 
@@ -73,83 +70,75 @@ export default async function DashboardPage() {
                 <CardTitle>Next Steps</CardTitle>
                 <CardDescription>Configure your experience</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-sm">Account created</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-sm text-muted-foreground">Explore protocols (coming soon)</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-sm text-muted-foreground">Set up watchlist (coming soon)</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-sm text-muted-foreground">Configure alerts (coming soon)</span>
-                </div>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Account created
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">Explore protocols (coming soon)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">Set up watchlist (coming soon)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">Configure alerts (coming soon)</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-2 border-primary/20 hover:border-primary/40 transition-colors">
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-primary/10 rounded-lg">
-                    <Shield className="h-6 w-6 text-primary" />
-                  </div>
+                  <Shield className="h-8 w-8 text-primary" />
                   <div>
                     <CardTitle>View All Protocols</CardTitle>
-                    <CardDescription>
-                      Access risk scores for 30 DeFi protocols
-                    </CardDescription>
+                    <CardDescription>Access risk scores for 30 DeFi protocols</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <Link href="/protocols">
-                  <Button className="w-full" size="lg">
-                    Explore Protocols
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button className="w-full" variant="outline">
+                    Explore Protocols <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary/20 transition-colors">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-muted rounded-lg">
-                    <Star className="h-6 w-6 text-muted-foreground" />
-                  </div>
+                  <Star className="h-8 w-8 text-primary" />
                   <div>
                     <CardTitle>Back to Homepage</CardTitle>
-                    <CardDescription>
-                      Learn more about Protocol Health
-                    </CardDescription>
+                    <CardDescription>Learn more about Protocol Health</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <Link href="/">
-                  <Button variant="outline" className="w-full" size="lg">
-                    Go to Homepage
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button className="w-full" variant="outline">
+                    Go to Homepage <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="mt-6 bg-gradient-to-br from-primary/5 to-purple-500/5">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5" />
-                Coming Soon
-              </CardTitle>
+                <CardTitle>Coming Soon</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-4">
